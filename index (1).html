@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuantumAI — QA-AGENT</title>
+  <meta name="description" content="QuantumAI QA-AGENT: A futuristic AI agent platform. Select your interface mode to begin." />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Particle canvas background */
+    #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <canvas id="particles"></canvas>
+  <div class="bg-grid"></div>
+  <div class="scanlines"></div>
+
+  <main class="selector-page">
+    <!-- HUD Rings -->
+    <div class="hud-ring"></div>
+    <div class="hud-ring"></div>
+    <div class="hud-ring"></div>
+
+    <!-- HUD Corners -->
+    <div class="hud-corner tl"></div>
+    <div class="hud-corner tr"></div>
+    <div class="hud-corner bl"></div>
+    <div class="hud-corner br"></div>
+
+    <!-- Logo -->
+    <div class="logo-container">
+      <div class="logo-qa">QuantumAI</div>
+      <div class="logo-sub">QA · AGENT · SYSTEM</div>
+      <div class="logo-badge">v1.0.0 — INITIALIZED</div>
+      <p class="logo-description">
+        An advanced AI Agent platform built for the next generation.<br>
+        Select your preferred interface mode to begin.
+      </p>
+    </div>
+
+    <!-- Device Selector -->
+    <div class="selector-label">SELECT INTERFACE MODE</div>
+
+    <div class="device-cards">
+      <a href="desktop.html" class="device-card">
+        <span class="device-icon">🖥</span>
+        <div class="device-name">DESKTOP</div>
+        <div class="device-desc">Full sidebar &amp; widescreen layout</div>
+      </a>
+      <a href="tablet.html" class="device-card">
+        <span class="device-icon">📟</span>
+        <div class="device-name">TABLET</div>
+        <div class="device-desc">Balanced layout for mid-screens</div>
+      </a>
+      <a href="mobile.html" class="device-card">
+        <span class="device-icon">📱</span>
+        <div class="device-name">MOBILE</div>
+        <div class="device-desc">Compact layout for small screens</div>
+      </a>
+    </div>
+  </main>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div class="status-item">
+      <div class="status-dot"></div>
+      QA-SYSTEM ONLINE
+    </div>
+    <div class="status-item">⬡ NODE: PRIMARY</div>
+    <div class="status-item" id="clock-display">◷ LOADING...</div>
+    <div class="status-item" style="margin-left:auto">© QUANTUMAI · QA-AGENT</div>
+  </div>
+
+  <script>
+    // === Clock ===
+    function updateClock() {
+      const now = new Date();
+      const t = now.toTimeString().split(' ')[0];
+      document.getElementById('clock-display').textContent = '◷ ' + t;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // === Particle system ===
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Create particles
+    for (let i = 0; i < 80; i++) {
+      particles.push({
+        x: Math.random() * 1920,
+        y: Math.random() * 1080,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        size: Math.random() * 1.5 + 0.3,
+        alpha: Math.random() * 0.5 + 0.1
+      });
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = W;
+        if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H;
+        if (p.y > H) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 229, 255, ${p.alpha})`;
+        ctx.fill();
+      });
+
+      // Draw connections
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(0, 229, 255, ${0.06 * (1 - dist / 120)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+  </script>
+</body>
+</html>

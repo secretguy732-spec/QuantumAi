@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuantumAI — Desktop Mode</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="layout-desktop">
+  <div class="bg-grid"></div>
+  <div class="scanlines"></div>
+
+  <div class="chat-page">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div class="topbar-logo">
+        <a href="index.html" style="text-decoration:none">
+          <span class="topbar-logo-text">⬡ QuantumAI</span>
+        </a>
+        <span class="topbar-logo-badge">QA-AGENT · DESKTOP</span>
+      </div>
+
+      <div class="topbar-center">
+        <div class="api-status offline" id="api-status">
+          <div class="api-dot"></div>
+          <span class="api-label">API OFFLINE</span>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <span class="status-item" id="clock-display" style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-dim);margin-right:0.5rem"></span>
+        <button class="icon-btn" id="apikey-btn" title="API Key Manager">🔑</button>
+        <button class="icon-btn" id="settings-btn" title="Settings">⚙</button>
+        <a href="index.html" class="icon-btn" title="Back to selector">⬅</a>
+      </div>
+    </div>
+
+    <!-- SERVER URL BAR -->
+    <div class="server-url-bar">
+      <span class="server-url-label">SERVER ▸</span>
+      <input class="server-url-input" id="server-url-input" type="text" placeholder="http://localhost:3000" />
+      <button onclick="checkApiStatus()" style="background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:var(--font-mono);font-size:0.6rem;padding:0.2rem 0.6rem;border-radius:2px;cursor:pointer;letter-spacing:0.1em;transition:all .2s" onmouseover="this.style.borderColor='var(--cyan)';this.style.color='var(--cyan)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">PING</button>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="chat-layout">
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-section-title">NAVIGATION</div>
+        <div class="sidebar-item active" onclick="activateSideTab(this, 'chat')">
+          <span class="sidebar-item-icon">💬</span> Chat
+        </div>
+        <div class="sidebar-item" onclick="activateSideTab(this, 'keys')">
+          <span class="sidebar-item-icon">🔑</span> API Keys
+        </div>
+        <div class="sidebar-item" onclick="activateSideTab(this, 'settings')">
+          <span class="sidebar-item-icon">⚙</span> Settings
+        </div>
+
+        <div class="sidebar-section-title">TOOLS</div>
+        <div class="sidebar-item" onclick="injectTool('search: ')">
+          <span class="sidebar-item-icon">🔍</span> Web Search
+        </div>
+        <div class="sidebar-item" onclick="injectTool('code: ')">
+          <span class="sidebar-item-icon">💻</span> Code Assist
+        </div>
+        <div class="sidebar-item" onclick="injectTool('task: ')">
+          <span class="sidebar-item-icon">⚙</span> Task Agent
+        </div>
+
+        <div class="sidebar-section-title">FUTURE PLUGINS</div>
+        <div class="sidebar-item" style="opacity:0.4;cursor:not-allowed">
+          <span class="sidebar-item-icon">🎙</span> Voice Input
+        </div>
+        <div class="sidebar-item" style="opacity:0.4;cursor:not-allowed">
+          <span class="sidebar-item-icon">🖼</span> Image Gen
+        </div>
+        <div class="sidebar-item" style="opacity:0.4;cursor:not-allowed">
+          <span class="sidebar-item-icon">🧠</span> Memory DB
+        </div>
+        <div class="sidebar-item" style="opacity:0.4;cursor:not-allowed">
+          <span class="sidebar-item-icon">👥</span> Multi-User
+        </div>
+
+        <div style="flex:1"></div>
+        <div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);letter-spacing:0.1em;padding:0.5rem;border-top:1px solid var(--border);margin-top:1rem">
+          QA-AGENT v1.0.0<br>BUILD: ALPHA
+        </div>
+      </aside>
+
+      <!-- MAIN CHAT -->
+      <div class="chat-main">
+        <div class="messages-area" id="messages-area">
+          <div class="welcome-banner" id="welcome-banner">
+            <div class="welcome-banner-title">⬡ QA-AGENT ONLINE</div>
+            <div class="welcome-banner-sub">QuantumAI Desktop Interface · Ready for input</div>
+          </div>
+        </div>
+
+        <!-- INPUT AREA -->
+        <div class="input-area">
+          <div class="input-tools">
+            <button class="tool-btn" data-tool="search">🔍 SEARCH</button>
+            <button class="tool-btn" data-tool="code">💻 CODE</button>
+            <button class="tool-btn" data-tool="task">⚙ TASK</button>
+          </div>
+          <div class="input-row">
+            <textarea class="chat-input" id="chat-input" rows="1" placeholder="Ask QA-AGENT anything..."></textarea>
+            <button class="send-btn" id="send-btn" title="Send">➤</button>
+            <button class="clear-btn" id="clear-btn" title="Clear chat">🗑</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- API KEY MODAL -->
+  <div class="modal-overlay" id="apikey-modal">
+    <div class="modal">
+      <div class="modal-title">🔑 API KEY MANAGER</div>
+
+      <div class="modal-label">ENTER YOUR API KEY</div>
+      <input class="modal-input" id="api-key-input" type="text" placeholder="qa-xxxxxxxxxxxx" />
+
+      <div class="modal-label">GENERATE A NEW KEY</div>
+      <div class="generated-key" id="generated-key-display"></div>
+
+      <div class="modal-buttons">
+        <button class="btn btn-primary" id="generate-key-btn">⚡ GENERATE</button>
+        <button class="btn btn-success" id="copy-key-btn">📋 COPY KEY</button>
+        <button class="btn btn-primary" id="save-key-btn">💾 SAVE KEY</button>
+        <button class="btn btn-secondary" onclick="closeAllModals()">✕ CLOSE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal">
+      <div class="modal-title">⚙ SETTINGS</div>
+
+      <div class="modal-label">SERVER URL (Termux/Tunnel)</div>
+      <input class="modal-input" id="settings-server-url" type="text" placeholder="https://your-tunnel.ngrok.io" />
+
+      <div class="modal-label">API KEY</div>
+      <input class="modal-input" id="settings-api-key" type="text" placeholder="qa-xxxxxxxxxxxx" />
+
+      <div class="modal-buttons">
+        <button class="btn btn-primary" onclick="saveSettingsFull()">💾 SAVE</button>
+        <button class="btn btn-secondary" onclick="closeAllModals()">✕ CANCEL</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="chat.js"></script>
+  <script>
+    // Desktop-specific extras
+    function activateSideTab(el, tab) {
+      document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+      el.classList.add('active');
+      if (tab === 'keys') openModal('apikey-modal');
+      if (tab === 'settings') openModal('settings-modal');
+    }
+
+    function injectTool(prefix) {
+      const input = document.getElementById('chat-input');
+      if (!input) return;
+      if (!input.value.startsWith(prefix)) {
+        input.value = prefix + input.value;
+      }
+      input.focus();
+    }
+
+    function saveSettingsFull() {
+      const urlEl = document.getElementById('settings-server-url');
+      const keyEl = document.getElementById('settings-api-key');
+      if (urlEl && urlEl.value.trim()) {
+        QA.serverUrl = urlEl.value.trim();
+        localStorage.setItem('qa_server_url', QA.serverUrl);
+        const urlBar = document.getElementById('server-url-input');
+        if (urlBar) urlBar.value = QA.serverUrl;
+      }
+      if (keyEl && keyEl.value.trim()) {
+        QA.apiKey = keyEl.value.trim();
+        localStorage.setItem('qa_api_key', QA.apiKey);
+      }
+      closeAllModals();
+      checkApiStatus();
+    }
+
+    // Pre-fill settings
+    document.addEventListener('DOMContentLoaded', () => {
+      const su = document.getElementById('settings-server-url');
+      const sk = document.getElementById('settings-api-key');
+      if (su) su.value = localStorage.getItem('qa_server_url') || '';
+      if (sk) sk.value = localStorage.getItem('qa_api_key') || '';
+    });
+  </script>
+</body>
+</html>

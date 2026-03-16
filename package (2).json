@@ -1,0 +1,20 @@
+{
+  "name": "quantumai-qa-agent-server",
+  "version": "1.0.0",
+  "description": "QuantumAI QA-AGENT backend server — runs on Node.js / Termux",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": ["ai", "agent", "quantumai", "qa-agent", "chatbot"],
+  "author": "QuantumAI",
+  "license": "MIT"
+}

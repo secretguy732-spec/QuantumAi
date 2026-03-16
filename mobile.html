@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>QuantumAI — Mobile Mode</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Mobile-specific overrides */
+    .bottom-nav {
+      display: flex;
+      height: 56px;
+      background: rgba(0,15,22,0.9);
+      border-top: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      flex-shrink: 0;
+    }
+    .bottom-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      cursor: pointer;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 0.5rem;
+      letter-spacing: 0.1em;
+      transition: all 0.2s;
+      border: none;
+      background: transparent;
+    }
+    .bottom-nav-item.active, .bottom-nav-item:hover {
+      color: var(--cyan);
+    }
+    .bottom-nav-item span:first-child { font-size: 1.1rem; }
+    .send-btn { width: 50px !important; height: 50px !important; font-size: 1.2rem !important; }
+    .clear-btn { width: 44px !important; height: 50px !important; }
+  </style>
+</head>
+<body class="layout-mobile">
+  <div class="bg-grid"></div>
+  <div class="scanlines"></div>
+
+  <div class="chat-page">
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <a href="index.html" style="text-decoration:none">
+        <span class="topbar-logo-text">⬡ QuantumAI</span>
+      </a>
+
+      <div class="api-status offline" id="api-status" style="font-size:0.55rem;padding:0.2rem 0.5rem">
+        <div class="api-dot"></div>
+        <span class="api-label">API</span>
+      </div>
+
+      <div class="topbar-actions">
+        <button class="icon-btn" id="settings-btn" title="Settings">⚙</button>
+      </div>
+    </div>
+
+    <!-- SERVER URL BAR -->
+    <div class="server-url-bar">
+      <span class="server-url-label">SRV▸</span>
+      <input class="server-url-input" id="server-url-input" type="url" placeholder="http://localhost:3000" />
+    </div>
+
+    <!-- CHAT MAIN -->
+    <div class="chat-layout">
+      <div class="chat-main">
+        <div class="messages-area" id="messages-area">
+          <div class="welcome-banner" id="welcome-banner">
+            <div class="welcome-banner-title">⬡ QA-AGENT</div>
+            <div class="welcome-banner-sub">Mobile Interface · Ready</div>
+          </div>
+        </div>
+
+        <!-- TOOL ROW -->
+        <div style="padding:0.5rem 1rem 0;display:flex;gap:0.4rem;border-top:1px solid var(--border);background:rgba(0,20,30,0.5)">
+          <button class="tool-btn" data-tool="search" style="flex:1;justify-content:center">🔍</button>
+          <button class="tool-btn" data-tool="code" style="flex:1;justify-content:center">💻</button>
+          <button class="tool-btn" data-tool="task" style="flex:1;justify-content:center">⚙</button>
+        </div>
+
+        <!-- INPUT AREA -->
+        <div class="input-area" style="padding:0.6rem 1rem 0.75rem">
+          <div class="input-row">
+            <textarea class="chat-input" id="chat-input" rows="1" placeholder="Ask QA-AGENT..."></textarea>
+            <button class="send-btn" id="send-btn">➤</button>
+            <button class="clear-btn" id="clear-btn">🗑</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <button class="bottom-nav-item active" onclick="openModal('apikey-modal')">
+        <span>🔑</span><span>KEYS</span>
+      </button>
+      <button class="bottom-nav-item" onclick="openModal('settings-modal')">
+        <span>⚙</span><span>CONFIG</span>
+      </button>
+      <button class="bottom-nav-item" onclick="clearChat()">
+        <span>🗑</span><span>CLEAR</span>
+      </button>
+      <button class="bottom-nav-item" onclick="checkApiStatus()">
+        <span>📡</span><span>PING</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- API KEY MODAL -->
+  <div class="modal-overlay" id="apikey-modal">
+    <div class="modal" style="margin:1rem">
+      <div class="modal-title">🔑 API KEY</div>
+      <div class="modal-label">ENTER KEY</div>
+      <input class="modal-input" id="api-key-input" type="text" placeholder="qa-xxxxxxxxxxxx" />
+      <div class="generated-key" id="generated-key-display"></div>
+      <div class="modal-buttons">
+        <button class="btn btn-primary" id="generate-key-btn">⚡ GENERATE</button>
+        <button class="btn btn-success" id="copy-key-btn">📋 COPY</button>
+        <button class="btn btn-primary" id="save-key-btn">💾 SAVE</button>
+        <button class="btn btn-secondary" onclick="closeAllModals()">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal" style="margin:1rem">
+      <div class="modal-title">⚙ SETTINGS</div>
+      <div class="modal-label">SERVER URL</div>
+      <input class="modal-input" id="settings-server-url" type="url" placeholder="https://tunnel.ngrok.io" />
+      <div class="modal-label">API KEY</div>
+      <input class="modal-input" id="settings-api-key" type="text" placeholder="qa-xxxxxxxxxxxx" />
+      <div class="modal-buttons">
+        <button class="btn btn-primary" onclick="saveSettingsMobile()">💾 SAVE</button>
+        <button class="btn btn-secondary" onclick="closeAllModals()">✕ CANCEL</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="chat.js"></script>
+  <script>
+    function saveSettingsMobile() {
+      const u = document.getElementById('settings-server-url')?.value.trim();
+      const k = document.getElementById('settings-api-key')?.value.trim();
+      if (u) { QA.serverUrl = u; localStorage.setItem('qa_server_url', u); const b = document.getElementById('server-url-input'); if(b) b.value = u; }
+      if (k) { QA.apiKey = k; localStorage.setItem('qa_api_key', k); }
+      closeAllModals();
+      checkApiStatus();
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      const su = document.getElementById('settings-server-url');
+      const sk = document.getElementById('settings-api-key');
+      if (su) su.value = localStorage.getItem('qa_server_url') || '';
+      if (sk) sk.value = localStorage.getItem('qa_api_key') || '';
+    });
+  </script>
+</body>
+</html>
